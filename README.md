@@ -118,3 +118,28 @@ export default greet;
 ```
 
 The mangled name of the import is unfortunate, but we can work with it. With that wrapper we can use Spring Boot to host the application instead of Node.js.
+
+## Use the Tools
+
+There is a `--target web` option for `wasm-pack` (passed down to `bindgen`) which gets rid of the annoying `webpack` dependency. If we build like this:
+
+```
+$ wasm-pack build --target web
+```
+
+then the JavaScript is so trivial we could embed it directly in the `index.html`:
+
+```html
+<html>
+
+<body>
+	<h2>Hello</h2>
+	<script type="module">
+		import init, { greet } from "./hello_rust.js";
+		await init();
+		greet();
+	</script>
+</body>
+
+</html>
+```

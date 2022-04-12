@@ -21,6 +21,7 @@ public class DemoApplication {
 		return resources -> {
 			Map<String, MediaType> of = new HashMap<>();
 			of.put("mjs", MediaType.valueOf("application/javascript"));
+			of.put("wasm", MediaType.valueOf("application/wasm"));
 			resources.setMediaTypes(of);
 		};
 	}

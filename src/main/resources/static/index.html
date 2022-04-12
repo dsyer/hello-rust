@@ -3,7 +3,8 @@
 <body>
 	<h2>Hello</h2>
 	<script type="module">
-		import { greet } from "./bundle.mjs";
+		import init, { greet } from "./hello_rust.js";
+		await init();
 		greet();
 	</script>
 </body>
