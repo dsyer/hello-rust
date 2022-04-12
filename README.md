@@ -54,4 +54,32 @@ $ ls pkg/
 README.md  hello_rust.d.ts  hello_rust.js  hello_rust_bg.js  hello_rust_bg.wasm  hello_rust_bg.wasm.d.ts  package.json
 ```
 
-We can use that `pkg` as a module in a Node.js app, like it describes in the tutorial. It pops up an alert in the browswer.
+We can use that `pkg` as a module in a Node.js app, like it describes in the tutorial.
+
+```
+$ npm init wasm-app www
+```
+
+add the dependency in `www/package.json`:
+
+```
+  "dependencies": {
+    "hello-rust": "file:../pkg"
+  }
+```
+
+fix the import in `index.js`:
+
+```
+import * as wasm from "hello-rust";
+```
+
+Install dependencies and run:
+
+```
+$ cd www
+$ npm install
+$ npm run start
+```
+
+It pops up an alert in the browswer. It does it by using `webpack` to generate yet another JavaScript to launch the WASM. Sigh.
