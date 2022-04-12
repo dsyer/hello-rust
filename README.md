@@ -54,6 +54,8 @@ $ ls pkg/
 README.md  hello_rust.d.ts  hello_rust.js  hello_rust_bg.js  hello_rust_bg.wasm  hello_rust_bg.wasm.d.ts  package.json
 ```
 
+## Hosting the Generated WASM in an HTTP Server
+
 We can use that `pkg` as a module in a Node.js app, like it describes in the tutorial.
 
 ```
@@ -83,3 +85,36 @@ $ npm run start
 ```
 
 It pops up an alert in the browswer. It does it by using `webpack` to generate yet another JavaScript to launch the WASM. Sigh.
+
+## Manually Create the WASM Dependencies
+
+Instead of using the generated JavaScript from `wasm-pack` we could write a module that defines  all the imports manually and injects them into the `WebAssembly`. In this case there is only one import for the `alert()` function. Example:
+
+```javascript
+var bytes;
+
+if (typeof fetch === 'undefined') {
+  let dir = await import('path').then(path => path.dirname(import.meta.url).replace('file:/', ''));
+  bytes = await import('fs').then(fs => fs.readFileSync(dir + '/hello_rust_bg.wasm'));
+} else {
+  bytes = await fetch('./hello_rust_bg.wasm').then(response => response.arrayBuffer());
+}
+
+const decoder = new TextDecoder();
+
+let memory;
+let imports = {"./hello_rust_bg.js": {
+        "__wbg_alert_a899de29f2865bbe": (ptr,len) => console.log(decoder.decode(new Uint8Array(memory.buffer, ptr, len)))
+    }
+};
+var wasm = await WebAssembly.instantiate(bytes, imports);
+memory = wasm.instance.exports.memory;
+let greet = () => {
+  wasm.instance.exports.greet();
+};
+
+export {greet};
+export default greet;
+```
+
+The mangled name of the import is unfortunate, but we can work with it. With that wrapper we can use Spring Boot to host the application instead of Node.js.
