@@ -44,3 +44,5 @@ build/
 .vscode/
 
 .bin/
+*.wat
+*.wasm
