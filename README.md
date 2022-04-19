@@ -20,6 +20,12 @@ warning: `hello-rust` (lib) generated 1 warning
 [WARN]: :-) [60] SSL peer certificate or SSH remote key was not OK (SSL certificate problem: unable to get local issuer certificate)
 ```
 
+> NOTE: to use the `nix-shell` with the `shell.nix` from this repo you will need to switch off wasm optimization in `Cargo.toml` (per the instructions from the build error):
+>
+>        [package.metadata.wasm-pack.profile.release]
+>        wasm-opt = false
+
+
 The JavaScript is so trivial we could embed it directly in the `index.html`:
 
 ```html
@@ -46,9 +52,10 @@ globalThis.alert = (...args) => {
 
 import init, { greet } from "./hello_rust.js";
 const bytes = fs.readFileSync(path.dirname(import.meta.url).replace('file://', '') + '/hello_rust_bg.wasm');
-await init(bytes);
+let wasm = await init(bytes);
 
-export { greet };
+export { wasm, greet };
+export default greet;
 ```
 
 Run it after building the Spring Boot project so that the static resources are copied over to `./target`:
