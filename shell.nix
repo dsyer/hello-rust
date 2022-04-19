@@ -14,6 +14,7 @@ mkShell {
     export EM_CACHE=~/.emscripten/cache
     export TMP=/tmp
     export TMPDIR=/tmp
+    RUSTUP_HOME=~/.rustup
     rustup install $RUSTC_VERSION
     rustup default $RUSTC_VERSION
     export PATH=$PATH:~/.cargo/bin
